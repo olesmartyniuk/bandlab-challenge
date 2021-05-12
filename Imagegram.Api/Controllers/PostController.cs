@@ -17,9 +17,9 @@ namespace Imagegram.Api.Controllers
         }
 
         [HttpPost("posts")]
-        public ActionResult<PostDto> Create()
+        public ActionResult<CreatePostResponse> Create()
         {
-            return Created("url", new PostDto
+            return Created("url", new CreatePostResponse
             {
                 CreatedAt = DateTime.UtcNow,
                 Creator = new AccountDto
@@ -46,7 +46,7 @@ namespace Imagegram.Api.Controllers
         [HttpPost("posts/{postId}/comments")]
         public ActionResult<CommentDto> AddComment([FromRoute]int postId, [FromBody]AddCommentRequest request)
         {
-            return Created("url", new CommentDto
+            return Created("url", new PostDto
             {
                 CreatedAt = DateTime.UtcNow,
                 Creator = new AccountDto

@@ -1,6 +1,8 @@
-﻿namespace Imagegram.Api.Dtos
+﻿using MediatR;
+
+namespace Imagegram.Api.Dtos
 {
-    public class CreateAccountRequest
+    public class CreateAccountRequest : IRequest<CreateAccountResponse>
     {
         public string Name { get; set; }
     }
