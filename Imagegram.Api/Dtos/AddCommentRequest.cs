@@ -1,6 +1,8 @@
-﻿namespace Imagegram.Api.Dtos
+﻿using MediatR;
+
+namespace Imagegram.Api.Dtos
 {
-    public class AddCommentRequest
+    public class AddCommentRequest : IRequest<AddCommentResponse>
     {
         public string Content { get; set; }
     }
