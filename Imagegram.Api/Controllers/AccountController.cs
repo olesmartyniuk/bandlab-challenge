@@ -29,8 +29,8 @@ namespace Imagegram.Api.Controllers
         [HttpPost("accounts")]
         public async Task<ActionResult<CreateAccountResponse>> Create([FromBody] CreateAccountRequest request)
         {
-            var response = _mediator.Send(request);
-            return Created("accounts/1", response);
+            var response = await _mediator.Send(request);
+            return Created($"accounts/{response.Id}", response);
         }
 
         /// <summary>

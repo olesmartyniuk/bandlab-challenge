@@ -1,6 +1,8 @@
+using Imagegram.Api.Database;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -35,6 +37,11 @@ namespace Imagegram.Api
                 c.IncludeXmlComments(xmlPath);
             });
             services.AddMediatR(Assembly.GetExecutingAssembly());
+
+            services.AddDbContext<ApplicationContext>(options =>
+            {
+                options.UseSqlite(@"Data Source=imagegram.db");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
