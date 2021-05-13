@@ -1,8 +1,12 @@
 ﻿using Imagegram.Api.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.IO;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Imagegram.Api.Controllers
@@ -18,19 +22,33 @@ namespace Imagegram.Api.Controllers
         }
 
         /// <summary>
-        /// The method creates post with existed image.
+        /// The method creates post with image send as a body.
         /// </summary>
+        /// <remarks>
+        /// As body you need to provide an image in .png, .jpg or .bmp formats.
+        /// Format of the image should be described in Content-Type header. 
+        /// Content-Disposition header should be equal to 'attachment'.
+        /// </remarks>
         /// <returns>Created post.</returns>
         /// <response code="201">Post was created.</response>
         /// <response code="400">Request has incorrect format.</response>         
         /// <response code="401">Account unauthorized or doesn't exist.</response> 
         [HttpPost("posts")]
-        public ActionResult<CreatePostResponse> Create([FromBody] CreatePostRequest request)
+        public async Task<ActionResult<CreatePostResponse>> Create()
         {
-            var response = _mediator.Send(request);
+            using var stream = await GetBodyStream();
+            var accountId = GetAccountId();
 
-            return Created("url", response);
-        }
+            var request = new CreatePostRequest
+            {
+                ImageStream = stream,
+                AccountId = accountId
+            };
+
+            var response = await _mediator.Send(request);
+
+            return Created($"posts/{response.Id}", response);
+        }        
 
         /// <summary>
         /// The method returns posts with two last comments. Posts are sorted by number of comments.
@@ -48,7 +66,7 @@ namespace Imagegram.Api.Controllers
                 Limit = limit
             };
             var response = await _mediator.Send(request);
-            return Ok(response);                
+            return Ok(response);
         }
 
         /// <summary>
@@ -64,6 +82,23 @@ namespace Imagegram.Api.Controllers
         {
             var response = await _mediator.Send(request);
             return Created("url", response);
+        }
+
+        private Guid GetAccountId()
+        {
+            return Guid.Parse(HttpContext
+                .User
+                .FindFirstValue(ClaimTypes.Authentication));
+        }
+
+        private async Task<MemoryStream> GetBodyStream()
+        {
+            HttpContext.Request.EnableBuffering();
+            HttpContext.Request.Body.Seek(0, SeekOrigin.Begin);
+            var stream = new MemoryStream();
+            await HttpContext.Request.Body.CopyToAsync(stream);
+            stream.Position = 0;
+            return stream;
         }
     }
 }

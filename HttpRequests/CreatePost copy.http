@@ -1,0 +1,15 @@
+POST https://localhost:5001/posts HTTP/1.1
+X-Account-Id: E8451141-5274-44DD-BA30-D6CECEBDFC60
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Accept: */*
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="text"
+
+title
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="splash"; filename="splash.nmp"
+Content-Type: image/npm
+
+< ./splash.bmp
+------WebKitFormBoundary7MA4YWxkTrZu0gW--

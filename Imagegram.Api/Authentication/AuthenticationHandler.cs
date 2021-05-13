@@ -7,7 +7,6 @@ using Imagegram.Api.Database.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -77,10 +76,7 @@ namespace Imagegram.Api.Authentication
 
         private async Task<AccountModel> FindAccount(Guid accountId)
         {
-            var accessToken = await _db.Accounts                
-                .SingleOrDefaultAsync(a => a.Id == accountId);            
-            
-            return accessToken;
+            return await _db.Accounts.FindAsync(accountId);            
         }
     }
 }

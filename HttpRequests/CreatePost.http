@@ -1,0 +1,7 @@
+POST https://localhost:5001/posts HTTP/1.1
+X-Account-Id: E8451141-5274-44DD-BA30-D6CECEBDFC60
+Content-Type: image/bmp
+Content-Disposition: attachment; filename="splash.bmp"
+Accept: */*
+
+< ./splash.bmp

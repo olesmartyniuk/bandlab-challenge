@@ -1,5 +1,6 @@
 using Imagegram.Api.Authentication;
 using Imagegram.Api.Database;
+using Imagegram.Api.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -47,6 +48,8 @@ namespace Imagegram.Api
             {
                 options.UseSqlite(@"Data Source=imagegram.db");
             });
+
+            services.AddSingleton<ImageService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

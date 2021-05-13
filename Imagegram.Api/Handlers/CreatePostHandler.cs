@@ -1,4 +1,7 @@
-﻿using Imagegram.Api.Dtos;
+﻿using Imagegram.Api.Database;
+using Imagegram.Api.Database.Models;
+using Imagegram.Api.Dtos;
+using Imagegram.Api.Services;
 using MediatR;
 using System;
 using System.Threading;
@@ -8,18 +11,41 @@ namespace Imagegram.Api.Handlers
 {
     public class CreatePostHandler : IRequestHandler<CreatePostRequest, CreatePostResponse>
     {
-        public Task<CreatePostResponse> Handle(CreatePostRequest request, CancellationToken cancellationToken)
+        private readonly ImageService _imageService;
+        private readonly ApplicationContext _db;
+
+        public CreatePostHandler(ImageService imageService, ApplicationContext db)
         {
-            return Task.FromResult(new CreatePostResponse
+            _imageService = imageService;
+            _db = db;
+        }
+
+        public async Task<CreatePostResponse> Handle(CreatePostRequest request, CancellationToken cancellationToken)
+        {
+            var account = await _db.Accounts.FindAsync(new object[] { request.AccountId }, cancellationToken: cancellationToken);
+
+            var imageName = _imageService.SaveStream(request.ImageStream);
+
+            var post = new PostModel
             {
-                CreatedAt = DateTime.UtcNow,
+                ImageUrl = $"/images/{imageName}",
+                Creator = account,
+                CreatedAt = DateTime.UtcNow
+            };
+            _db.Posts.Add(post);
+            await _db.SaveChangesAsync(cancellationToken);
+
+            return new CreatePostResponse
+            {
+                Id = post.Id,
+                ImageUrl = post.ImageUrl,
+                CreatedAt = post.CreatedAt,
                 Creator = new AccountDto
                 {
-                    Id = Guid.NewGuid(),
-                    Name = "Test Account"
-                },
-                Id = 1
-            });
+                    Id = post.Creator.Id,
+                    Name = post.Creator.Name
+                }
+            };
         }
     }
 }

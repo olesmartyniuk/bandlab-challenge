@@ -15,6 +15,7 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.6" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Design" Version="1.1.6" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+		<PackageReference Include="System.Drawing.Common" Version="5.0.2" />
 	</ItemGroup>
 
 	<PropertyGroup>
