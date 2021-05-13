@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Imagegram.Api.Controllers
+namespace Imagegram.Api.Authentication
 {
     public class AuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {

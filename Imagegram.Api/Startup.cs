@@ -1,4 +1,4 @@
-using Imagegram.Api.Controllers;
+using Imagegram.Api.Authentication;
 using Imagegram.Api.Database;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;

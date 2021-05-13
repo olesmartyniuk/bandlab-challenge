@@ -348,3 +348,8 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# SQLite Database files
+**/*.db
+**/*.db-shm
+**/*.db-wal
