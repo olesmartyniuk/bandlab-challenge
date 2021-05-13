@@ -1,22 +1,21 @@
 ﻿using Imagegram.Api.Dtos;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Imagegram.Api.Controllers
 {
-    [ApiController]
+    [Authorize]
     [Produces("application/json")]
     public class AccountController : ControllerBase
     {
-        private readonly ILogger<AccountController> _logger;
         private readonly IMediator _mediator;
 
-        public AccountController(ILogger<AccountController> logger, IMediator mediator)
+        public AccountController(IMediator mediator)
         {
-            _logger = logger;
             _mediator = mediator;
         }
 
@@ -26,6 +25,7 @@ namespace Imagegram.Api.Controllers
         /// <returns>Created account.</returns>
         /// <response code="201">Account was created.</response>
         /// <response code="400">Request has incorrect format.</response>         
+        [AllowAnonymous]
         [HttpPost("accounts")]
         public async Task<ActionResult<CreateAccountResponse>> Create([FromBody] CreateAccountRequest request)
         {
@@ -39,12 +39,16 @@ namespace Imagegram.Api.Controllers
         /// <returns>Created account.</returns>
         /// <response code="200">Account was deleted.</response>
         /// <response code="401">Account unauthorized or doesn't exist.</response> 
-        [HttpDelete("accounts/{accountId}")]
+        [HttpDelete("accounts/me")]
         public async Task<ActionResult> Delete()
         {
+            var accountId = Guid.Parse(HttpContext
+                .User
+                .FindFirstValue(ClaimTypes.Authentication));
+
             await _mediator.Send(new DeleteAccountRequest
             {
-                AccountId = Guid.NewGuid()
+                AccountId = accountId
             });
             return Ok();
         }

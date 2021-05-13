@@ -1,8 +1,6 @@
-﻿using Imagegram.Api.Dtos;
+﻿using Imagegram.Api.Database;
+using Imagegram.Api.Dtos;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,9 +8,20 @@ namespace Imagegram.Api.Handlers
 {
     public class DeleteAccountHandler : IRequestHandler<DeleteAccountRequest, DeleteAccountResponse>
     {
-        public Task<DeleteAccountResponse> Handle(DeleteAccountRequest request, CancellationToken cancellationToken)
+        private readonly ApplicationContext _db;
+
+        public DeleteAccountHandler(ApplicationContext db)
         {
-            throw new NotImplementedException();
+            _db = db;
+        }
+
+        public async Task<DeleteAccountResponse> Handle(DeleteAccountRequest request, CancellationToken cancellationToken)
+        {
+            var accountModel = await _db.Accounts.FindAsync(request.AccountId);
+            _db.Accounts.Remove(accountModel);
+            await _db.SaveChangesAsync();
+
+            return new DeleteAccountResponse();
         }
     }
 }

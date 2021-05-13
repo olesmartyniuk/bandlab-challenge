@@ -1,0 +1,3 @@
+DELETE https://localhost:5001/accounts/me HTTP/1.1
+Accept: */*
+X-Account-Id: 3D4C444C-0327-4578-B427-E508E8A8C21C

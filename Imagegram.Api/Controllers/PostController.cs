@@ -1,22 +1,19 @@
 ﻿using Imagegram.Api.Dtos;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Imagegram.Api.Controllers
 {
-    [ApiController]
+    [Authorize]
     public class PostController : ControllerBase
     {
-        private readonly ILogger<PostController> _logger;
         private readonly IMediator _mediator;
 
-        public PostController(ILogger<PostController> logger, IMediator mediator)
+        public PostController(IMediator mediator)
         {
-            _logger = logger;
             _mediator = mediator;
         }
 

@@ -1,5 +1,7 @@
+using Imagegram.Api.Controllers;
 using Imagegram.Api.Database;
 using MediatR;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +27,9 @@ namespace Imagegram.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication("HeaderAuthentication")
+                .AddScheme<AuthenticationSchemeOptions, AuthenticationHandler>("HeaderAuthentication", null);
+            services.AddAuthorization();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -58,6 +63,7 @@ namespace Imagegram.Api
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
