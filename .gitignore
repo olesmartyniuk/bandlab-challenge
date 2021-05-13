@@ -353,3 +353,8 @@ MigrationBackup/
 **/*.db
 **/*.db-shm
 **/*.db-wal
+
+# Images
+**/*.jpg
+**/*.png
+**/*.bmp
