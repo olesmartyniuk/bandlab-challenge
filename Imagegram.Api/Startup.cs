@@ -1,5 +1,6 @@
 using Imagegram.Api.Authentication;
 using Imagegram.Api.Database;
+using Imagegram.Api.Dtos;
 using Imagegram.Api.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
@@ -43,6 +44,7 @@ namespace Imagegram.Api
                 c.IncludeXmlComments(xmlPath);
             });
             services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddAutoMapper(typeof(MappingProfile));
 
             services.AddDbContext<ApplicationContext>(options =>
             {

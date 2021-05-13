@@ -8,6 +8,8 @@ namespace Imagegram.Api.Database.Models
     {
         public int Id { get; set; }
         public string Content { get; set; }
+        public int PostId { get; set; }
+        public PostModel Post { get; set; }
         public AccountModel Creator { get; set; }
         public DateTime CreatedAt { get; set; }
     }
@@ -17,8 +19,10 @@ namespace Imagegram.Api.Database.Models
         public void Configure(EntityTypeBuilder<CommentModel> builder)
         {
             builder
-                .Property(p => p.Id)
+                .Property(c => c.Id)
                 .IsRequired();
+            builder
+               .HasOne(c => c.Post);
         }
     }
 }

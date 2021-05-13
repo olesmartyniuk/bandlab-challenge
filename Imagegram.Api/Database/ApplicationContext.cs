@@ -1,5 +1,6 @@
 ﻿using Imagegram.Api.Database.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace Imagegram.Api.Database
 {
@@ -11,6 +12,11 @@ namespace Imagegram.Api.Database
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options): base(options)
         {
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
     }
 }

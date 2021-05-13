@@ -45,14 +45,14 @@ namespace Imagegram.Api.Migrations
                     b.Property<Guid?>("CreatorId")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("PostModelId")
+                    b.Property<int>("PostId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CreatorId");
 
-                    b.HasIndex("PostModelId");
+                    b.HasIndex("PostId");
 
                     b.ToTable("Comments");
                 });
@@ -61,6 +61,15 @@ namespace Imagegram.Api.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("CommentBeforeLastId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("CommentLastId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CommentsCount")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("CreatedAt")
@@ -74,6 +83,12 @@ namespace Imagegram.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CommentBeforeLastId");
+
+                    b.HasIndex("CommentLastId");
+
+                    b.HasIndex("CommentsCount");
+
                     b.HasIndex("CreatorId");
 
                     b.ToTable("Posts");
@@ -85,25 +100,36 @@ namespace Imagegram.Api.Migrations
                         .WithMany()
                         .HasForeignKey("CreatorId");
 
-                    b.HasOne("Imagegram.Api.Database.Models.PostModel", null)
-                        .WithMany("Comments")
-                        .HasForeignKey("PostModelId");
+                    b.HasOne("Imagegram.Api.Database.Models.PostModel", "Post")
+                        .WithMany()
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Creator");
+
+                    b.Navigation("Post");
                 });
 
             modelBuilder.Entity("Imagegram.Api.Database.Models.PostModel", b =>
                 {
+                    b.HasOne("Imagegram.Api.Database.Models.CommentModel", "CommentBeforeLast")
+                        .WithMany()
+                        .HasForeignKey("CommentBeforeLastId");
+
+                    b.HasOne("Imagegram.Api.Database.Models.CommentModel", "CommentLast")
+                        .WithMany()
+                        .HasForeignKey("CommentLastId");
+
                     b.HasOne("Imagegram.Api.Database.Models.AccountModel", "Creator")
                         .WithMany()
                         .HasForeignKey("CreatorId");
 
-                    b.Navigation("Creator");
-                });
+                    b.Navigation("CommentBeforeLast");
 
-            modelBuilder.Entity("Imagegram.Api.Database.Models.PostModel", b =>
-                {
-                    b.Navigation("Comments");
+                    b.Navigation("CommentLast");
+
+                    b.Navigation("Creator");
                 });
 #pragma warning restore 612, 618
         }

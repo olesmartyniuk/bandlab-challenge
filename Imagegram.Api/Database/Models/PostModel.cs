@@ -11,7 +11,9 @@ namespace Imagegram.Api.Database.Models
         public string ImageUrl { get; set; }
         public AccountModel Creator { get; set; }
         public DateTime CreatedAt { get; set; }
-        public List<CommentModel> Comments { get; set; }
+        public int CommentsCount { get; set; }
+        public CommentModel CommentLast { get; set; }
+        public CommentModel CommentBeforeLast { get; set; }
     }
 
     public class PostModelConfiguration : IEntityTypeConfiguration<PostModel>
@@ -21,6 +23,12 @@ namespace Imagegram.Api.Database.Models
             builder
                 .Property(p => p.Id)
                 .IsRequired();
+            builder
+                .HasIndex(p => p.CommentsCount);
+            builder
+                .HasOne(p => p.CommentLast);
+            builder
+                .HasOne(p => p.CommentBeforeLast);
         }
     }
 }

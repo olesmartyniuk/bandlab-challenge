@@ -1,4 +1,5 @@
-﻿using Imagegram.Api.Database;
+﻿using AutoMapper;
+using Imagegram.Api.Database;
 using Imagegram.Api.Database.Models;
 using Imagegram.Api.Dtos;
 using Imagegram.Api.Services;
@@ -13,11 +14,13 @@ namespace Imagegram.Api.Handlers
     {
         private readonly ImageService _imageService;
         private readonly ApplicationContext _db;
+        private readonly IMapper _mapper;
 
-        public CreatePostHandler(ImageService imageService, ApplicationContext db)
+        public CreatePostHandler(ImageService imageService, ApplicationContext db, IMapper mapper)
         {
             _imageService = imageService;
             _db = db;
+            _mapper = mapper;
         }
 
         public async Task<CreatePostResponse> Handle(CreatePostRequest request, CancellationToken cancellationToken)
@@ -35,17 +38,7 @@ namespace Imagegram.Api.Handlers
             _db.Posts.Add(post);
             await _db.SaveChangesAsync(cancellationToken);
 
-            return new CreatePostResponse
-            {
-                Id = post.Id,
-                ImageUrl = post.ImageUrl,
-                CreatedAt = post.CreatedAt,
-                Creator = new AccountDto
-                {
-                    Id = post.Creator.Id,
-                    Name = post.Creator.Name
-                }
-            };
+            return _mapper.Map<CreatePostResponse>(post);
         }
     }
 }
