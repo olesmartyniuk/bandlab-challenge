@@ -10,6 +10,7 @@ namespace Imagegram.Api.Database.Models
         public string Content { get; set; }
         public int PostId { get; set; }
         public PostModel Post { get; set; }
+        public Guid CreatorId { get; set; }
         public AccountModel Creator { get; set; }
         public DateTime CreatedAt { get; set; }
     }

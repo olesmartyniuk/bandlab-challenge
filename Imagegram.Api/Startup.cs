@@ -1,5 +1,6 @@
 using Imagegram.Api.Authentication;
 using Imagegram.Api.Database;
+using Imagegram.Api.Database.Models;
 using Imagegram.Api.Dtos;
 using Imagegram.Api.Services;
 using MediatR;
@@ -52,6 +53,8 @@ namespace Imagegram.Api
             });
 
             services.AddSingleton<ImageService>();
+            services.AddSingleton<Cash<AccountModel>>();
+            services.AddSingleton<Cash<PostModel>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

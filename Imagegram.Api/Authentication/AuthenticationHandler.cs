@@ -4,6 +4,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Imagegram.Api.Database;
 using Imagegram.Api.Database.Models;
+using Imagegram.Api.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -16,16 +17,19 @@ namespace Imagegram.Api.Authentication
     {
         private const string AccountIdHeader = "X-Account-Id";
         private readonly ApplicationContext _db;
+        private readonly Cash<AccountModel> _accountCash;
 
         public AuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
             ISystemClock clock,
-            ApplicationContext db)
+            ApplicationContext db,
+            Cash<AccountModel> accountCash)
             : base(options, logger, encoder, clock)
         {
             _db = db;
+            _accountCash = accountCash;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -76,7 +80,10 @@ namespace Imagegram.Api.Authentication
 
         private async Task<AccountModel> FindAccount(Guid accountId)
         {
-            return await _db.Accounts.FindAsync(accountId);            
+            return await _accountCash
+                .GetOrCreate(
+                    accountId, 
+                    async () => await _db.Accounts.FindAsync(accountId));
         }
     }
 }

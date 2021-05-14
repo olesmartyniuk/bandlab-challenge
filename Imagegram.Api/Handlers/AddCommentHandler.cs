@@ -1,6 +1,7 @@
 ﻿using Imagegram.Api.Database;
 using Imagegram.Api.Database.Models;
 using Imagegram.Api.Dtos;
+using Imagegram.Api.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -12,10 +13,14 @@ namespace Imagegram.Api.Handlers
     public class AddCommentHandler : IRequestHandler<AddCommentRequest, AddCommentResponse>
     {
         private readonly ApplicationContext _db;
+        private readonly Cash<PostModel> _postsCash;
+        private readonly Cash<AccountModel> _accountsCash;
 
-        public AddCommentHandler(ApplicationContext db)
+        public AddCommentHandler(ApplicationContext db, Cash<PostModel> postsCash, Cash<AccountModel> accountsCash)
         {
             _db = db;
+            _postsCash = postsCash;
+            _accountsCash = accountsCash;
         }
 
         public async Task<AddCommentResponse> Handle(AddCommentRequest request, CancellationToken cancellationToken)
@@ -25,13 +30,15 @@ namespace Imagegram.Api.Handlers
                 //TODO: handle error
             }
 
-            var post = await _db.Posts.FindAsync(new object[] { request.PostId }, cancellationToken);
+            var post = await _postsCash.GetOrCreate(request.PostId, 
+                async () => await _db.Posts.FindAsync(new object[] { request.PostId }, cancellationToken));            
             if (post == null)
             {
                 //TODO: handle error
             }
 
-            var account = await _db.Accounts.FindAsync(new object[] { request.AccountId }, cancellationToken);
+            var account = await _accountsCash.GetOrCreate(request.AccountId,
+                async () => await _db.Accounts.FindAsync(new object[] { request.AccountId }, cancellationToken));
             if (account == null)
             {
                 //TODO: handle error
@@ -41,8 +48,8 @@ namespace Imagegram.Api.Handlers
             {
                 Content = request.Content,
                 CreatedAt = DateTime.UtcNow,
-                Post = post,
-                Creator = account
+                PostId = post.Id,
+                CreatorId = account.Id
             };
 
             _db.Comments.Add(comment);           

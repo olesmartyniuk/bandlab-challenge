@@ -1,4 +1,4 @@
-POST https://localhost:5001/posts/2/comments HTTP/1.1
+POST https://localhost:5001/posts/4/comments HTTP/1.1
 X-Account-Id: 3016ff6a-e082-4599-b00e-04dbfc24568e
 Content-Type: application/json
 Accept: */*
