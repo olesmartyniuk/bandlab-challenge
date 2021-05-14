@@ -60,8 +60,10 @@ namespace Imagegram.Api.Controllers
         [HttpGet("posts")]
         public async Task<ActionResult<GetPostsResponse>> Get([FromQuery] string cursor, [FromQuery] int limit = 100)
         {
+            var accountId = GetAccountId();
             var request = new GetPostsRequest
             {
+                AccountId = accountId,
                 Cursor = cursor,
                 Limit = limit
             };
