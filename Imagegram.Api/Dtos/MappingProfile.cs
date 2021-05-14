@@ -10,7 +10,7 @@ namespace Imagegram.Api.Dtos
             CreateMap<PostModel, PostDto>();
             CreateMap<PostModel, CreatePostResponse>();
             CreateMap<CommentModel, CommentDto>();
-            CreateMap<CommentModel, AddCommentResponse>();
+            CreateMap<PostModel, AddCommentResponse>();
             CreateMap<AccountModel, AccountDto>();
             CreateMap<AccountModel, CreateAccountResponse>();
         }

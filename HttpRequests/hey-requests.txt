@@ -1,0 +1,5 @@
+Create Accounts
+hey -n 1000 -c 1 -m POST -T "application/json" -d "{\"name\": \"Sasha 3\" }" https://localhost:5001/accounts
+
+Add Comments
+hey -n 1000 -c 1 -m POST -T "application/json" -H "X-Account-Id: 3016ff6a-e082-4599-b00e-04dbfc24568e" -d "{\"content\": \"Some comment\" }" https://localhost:5001/posts/2/comments

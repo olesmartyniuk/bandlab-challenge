@@ -1,6 +1,6 @@
 ﻿namespace Imagegram.Api.Dtos
 {
-    public class AddCommentResponse: PostDto
+    public class AddCommentResponse
     {
     }
 }

@@ -12,7 +12,9 @@ namespace Imagegram.Api.Database.Models
         public AccountModel Creator { get; set; }
         public DateTime CreatedAt { get; set; }
         public int CommentsCount { get; set; }
+        public int? CommentLastId { get; set; }
         public CommentModel CommentLast { get; set; }
+        public int? CommentBeforeLastId { get; set; }
         public CommentModel CommentBeforeLast { get; set; }
     }
 
