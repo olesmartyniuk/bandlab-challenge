@@ -5,4 +5,7 @@ Add Comments
 hey -n 1000 -c 1 -m POST -T "application/json" -H "X-Account-Id: 3016ff6a-e082-4599-b00e-04dbfc24568e" -d "{\"content\": \"Some comment\" }" https://localhost:5001/posts/2/comments
 
 Get Posts
-hey -n 1000 -c 1 -m GET -H "X-Account-Id: 3016ff6a-e082-4599-b00e-04dbfc24568e" https://localhost:5001/posts?cursor=MTg6MQ%3D%3D&limit=2
+hey -n 1000 -c 1 -m GET -H "X-Account-Id: 5b44b366-aa5d-4ee0-ac09-75ce87c649fd" https://localhost:5001/posts?cursor=&limit=
+
+Get Image
+hey -n 1000 -c 1 -m GET https://localhost:5001/images/0ee661e6-e947-4569-86aa-2c1901195710.jpg

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -6,10 +7,17 @@ using System.IO;
 namespace Imagegram.Api.Services
 {
     public class ImageService
-    {        
-        public string SaveStream(Stream data)
+    {
+        private readonly string _baseDirectory;
+
+        public ImageService(IConfiguration configuration)
         {
-            var name = GenerateName();
+            _baseDirectory = configuration["ImagesBaseDirectory"];
+        }
+
+        public string Save(Stream data)
+        {
+            var name = CreateNewName();
             var path = GetFilePath(name);
 
             using (var file = File.OpenWrite(path))
@@ -18,11 +26,17 @@ namespace Imagegram.Api.Services
             }
 
             return name;        
-        }             
-
-        public Stream GetStream(string name)
+        } 
+        
+        public bool Exists(string name)
         {
             var path = GetFilePath(name);
+            return File.Exists(path);
+        }
+
+        public Stream Get(string name)
+        {
+            var path = GetFilePath(name);          
 
             using (var file = File.OpenRead(path))
             {
@@ -33,13 +47,19 @@ namespace Imagegram.Api.Services
             }
         }
 
+        public void Delete(string name)
+        {
+            var path = GetFilePath(name);
+            File.Delete(path);
+        }
+
         private void ConvertImageToJpg(Stream imageStream, Stream destinationStream)
         {
             using var image = Image.FromStream(imageStream, false);
             image.Save(destinationStream, ImageFormat.Jpeg);
         }
 
-        private string GenerateName()
+        private string CreateNewName()
         {
             return $@"{Guid.NewGuid()}.jpg";
         }
@@ -51,9 +71,11 @@ namespace Imagegram.Api.Services
 
         private string GetBaseDirectory()
         {
-            var baseDirectory = Path.Combine(Directory.GetCurrentDirectory(), "images");
-            Directory.CreateDirectory(baseDirectory);
-            return baseDirectory;
+            if (!Directory.Exists(_baseDirectory))
+            {
+                Directory.CreateDirectory(_baseDirectory);
+            }
+            return _baseDirectory;
         }
     }
 }

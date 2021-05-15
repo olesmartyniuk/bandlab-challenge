@@ -25,18 +25,26 @@ namespace Imagegram.Api.Handlers
 
         public async Task<CreatePostResponse> Handle(CreatePostRequest request, CancellationToken cancellationToken)
         {
-            var account = await _db.Accounts.FindAsync(new object[] { request.AccountId }, cancellationToken: cancellationToken);
-
-            var imageName = _imageService.SaveStream(request.ImageStream);
+            var imageName = _imageService.Save(request.ImageStream);
 
             var post = new PostModel
             {
                 ImageUrl = $"/images/{imageName}",
-                Creator = account,
+                CreatorId = request.AccountId,
                 CreatedAt = DateTime.UtcNow
             };
-            _db.Posts.Add(post);
-            await _db.SaveChangesAsync(cancellationToken);
+
+            try
+            {
+                _db.Posts.Add(post);
+
+                await _db.SaveChangesAsync(cancellationToken);
+            }
+            catch
+            {
+                _imageService.Delete(imageName);
+                throw;
+            }
 
             return _mapper.Map<CreatePostResponse>(post);
         }

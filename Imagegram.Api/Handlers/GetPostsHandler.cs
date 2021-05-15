@@ -2,6 +2,7 @@
 using Imagegram.Api.Database;
 using Imagegram.Api.Database.Models;
 using Imagegram.Api.Dtos;
+using Imagegram.Api.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace Imagegram.Api.Handlers
 {
     public class GetPostsHandler : IRequestHandler<GetPostsRequest, GetPostsResponse>
     {
+        private const int MaxLimit = 1000;
         private readonly ApplicationContext _db;
         private readonly IMapper _mapper;
 
@@ -25,15 +27,19 @@ namespace Imagegram.Api.Handlers
         public async Task<GetPostsResponse> Handle(GetPostsRequest request, CancellationToken cancellationToken)
         {
             var cursor = PostsCursor.ParseCursor(request.Cursor);
-            var limit = request.Limit;
-
-            if (cursor.IsInvalid || limit > 1000)
+            if (cursor.IsInvalid)
             {
-                //TODO: handle error
+                throw new InvalidParameterException("Cursor has invalid format.");
+            }
+
+            var limit = request.Limit;
+            if (limit > MaxLimit)
+            {
+                throw new InvalidParameterException("The limit parameter can't be greater than 1000.");
             }
 
             var postsQuery = GetPostsQuery(cursor, limit);
-            var posts = await postsQuery.ToListAsync();
+            var posts = await postsQuery.ToListAsync(cancellationToken);
             var nextCursor = GetNextCursor(limit, posts);
 
             return new GetPostsResponse

@@ -1,5 +1,5 @@
 POST https://localhost:5001/posts HTTP/1.1
-X-Account-Id: 3016ff6a-e082-4599-b00e-04dbfc24568e
+X-Account-Id: 3016FF6A-E082-4599-B00E-04DBFC24568E
 Content-Type: image/bmp
 Content-Disposition: attachment; filename="splash.bmp"
 Accept: */*

@@ -1,8 +1,8 @@
-POST https://localhost:5001/posts/4/comments HTTP/1.1
-X-Account-Id: 3016ff6a-e082-4599-b00e-04dbfc24568e
+POST https://localhost:5001/posts/1/comments HTTP/1.1
+X-Account-Id: 5b44b366-aa5d-4ee0-ac09-75ce87c649fd
 Content-Type: application/json
 Accept: */*
 
 {
-    "content": "Comment 5"
+    "content": "Comment"
 }

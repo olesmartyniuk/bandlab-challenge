@@ -29,7 +29,7 @@ namespace Imagegram.Api.Handlers
             };
 
             _db.Accounts.Add(account);
-            await _db.SaveChangesAsync();
+            await _db.SaveChangesAsync(cancellationToken);
 
             return _mapper.Map<CreateAccountResponse>(account);
         }

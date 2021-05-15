@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
-using System.Collections.Generic;
 
 namespace Imagegram.Api.Database.Models
 {
@@ -9,6 +8,7 @@ namespace Imagegram.Api.Database.Models
     {
         public int Id { get; set; }
         public string ImageUrl { get; set; }
+        public Guid CreatorId { get; set; }
         public AccountModel Creator { get; set; }
         public DateTime CreatedAt { get; set; }
         public int CommentsCount { get; set; }

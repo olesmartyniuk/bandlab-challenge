@@ -3,7 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Imagegram.Api.Controllers
@@ -40,17 +39,9 @@ namespace Imagegram.Api.Controllers
         /// <response code="200">Account was deleted.</response>
         /// <response code="401">Account unauthorized or doesn't exist.</response> 
         [HttpDelete("accounts/me")]
-        public async Task<ActionResult> Delete()
+        public ActionResult Delete()
         {
-            var accountId = Guid.Parse(HttpContext
-                .User
-                .FindFirstValue(ClaimTypes.Authentication));
-
-            await _mediator.Send(new DeleteAccountRequest
-            {
-                AccountId = accountId
-            });
-            return Ok();
+            throw new NotImplementedException();
         }
     }
 }

@@ -24,12 +24,10 @@ namespace Imagegram.Api.Handlers
             {
                 return EmptyCursor();
             }
-            else
-            {
-                var cursor = new PostsCursor();
-                cursor.FromBase64(base64Value);
-                return cursor;
-            }
+
+            var cursor = new PostsCursor();
+            cursor.FromBase64(base64Value);
+            return cursor;
         }
 
         public static PostsCursor NewCursor(int commentsCount, int lastPostId)
@@ -39,7 +37,7 @@ namespace Imagegram.Api.Handlers
                 CommentsCount = commentsCount,
                 LastPostId = lastPostId
             };
-        }        
+        }
 
         public string ToBase64()
         {

@@ -1,6 +1,7 @@
 ﻿using Imagegram.Api.Database;
 using Imagegram.Api.Database.Models;
 using Imagegram.Api.Dtos;
+using Imagegram.Api.Exceptions;
 using Imagegram.Api.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -14,34 +15,25 @@ namespace Imagegram.Api.Handlers
     {
         private readonly ApplicationContext _db;
         private readonly Cash<PostModel> _postsCash;
-        private readonly Cash<AccountModel> _accountsCash;
 
-        public AddCommentHandler(ApplicationContext db, Cash<PostModel> postsCash, Cash<AccountModel> accountsCash)
+        public AddCommentHandler(ApplicationContext db, Cash<PostModel> postsCash)
         {
             _db = db;
             _postsCash = postsCash;
-            _accountsCash = accountsCash;
         }
 
         public async Task<AddCommentResponse> Handle(AddCommentRequest request, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(request.Content))
             {
-                //TODO: handle error
+                throw new InvalidParameterException("Comment content can't be empty.");
             }
 
-            var post = await _postsCash.GetOrCreate(request.PostId, 
-                async () => await _db.Posts.FindAsync(new object[] { request.PostId }, cancellationToken));            
+            var post = await _postsCash.GetOrCreate(request.PostId,
+                async () => await _db.Posts.FindAsync(request.PostId));
             if (post == null)
             {
-                //TODO: handle error
-            }
-
-            var account = await _accountsCash.GetOrCreate(request.AccountId,
-                async () => await _db.Accounts.FindAsync(new object[] { request.AccountId }, cancellationToken));
-            if (account == null)
-            {
-                //TODO: handle error
+                throw new PostNotFoundException($"Post with id '{request.PostId}' is not found.");
             }
 
             var comment = new CommentModel
@@ -49,15 +41,18 @@ namespace Imagegram.Api.Handlers
                 Content = request.Content,
                 CreatedAt = DateTime.UtcNow,
                 PostId = post.Id,
-                CreatorId = account.Id
+                CreatorId = request.AccountId
             };
-
-            _db.Comments.Add(comment);           
-            await _db.SaveChangesAsync(cancellationToken);
-
+            await SaveComment(comment);
             await UpdatePost(post);
 
             return new AddCommentResponse();
+        }
+
+        private async Task SaveComment(CommentModel comment)
+        {
+            _db.Comments.Add(comment);
+            await _db.SaveChangesAsync();
         }
 
         private async Task UpdatePost(PostModel post)
