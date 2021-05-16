@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Imagegram.Api.Handlers
 {
-    public class AddCommentHandler : IRequestHandler<AddCommentRequest, AddCommentResponse>
+    public class AddCommentHandler : AsyncRequestHandler<AddCommentRequest>
     {
         private readonly ApplicationContext _db;
         private readonly Cash<PostModel> _postsCash;
@@ -22,7 +22,7 @@ namespace Imagegram.Api.Handlers
             _postsCash = postsCash;
         }
 
-        public async Task<AddCommentResponse> Handle(AddCommentRequest request, CancellationToken cancellationToken)
+        protected override async Task Handle(AddCommentRequest request, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(request.Content))
             {
@@ -45,8 +45,6 @@ namespace Imagegram.Api.Handlers
             };
             await SaveComment(comment);
             await UpdatePost(post);
-
-            return new AddCommentResponse();
         }
 
         private async Task SaveComment(CommentModel comment)

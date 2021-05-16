@@ -2,7 +2,6 @@ using Hellang.Middleware.ProblemDetails;
 using Imagegram.Api.Authentication;
 using Imagegram.Api.Database;
 using Imagegram.Api.Database.Models;
-using Imagegram.Api.Dtos;
 using Imagegram.Api.Exceptions;
 using Imagegram.Api.Services;
 using MediatR;
@@ -49,7 +48,6 @@ namespace Imagegram.Api
                 c.IncludeXmlComments(xmlPath);
             });
             services.AddMediatR(Assembly.GetExecutingAssembly());
-            services.AddAutoMapper(typeof(MappingProfile));
 
             services.AddDbContext<ApplicationContext>(options =>
             {

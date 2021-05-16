@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Imagegram.Api.Database;
+﻿using Imagegram.Api.Database;
 using Imagegram.Api.Database.Models;
 using Imagegram.Api.Dtos;
 using Imagegram.Api.Services;
@@ -10,20 +9,18 @@ using System.Threading.Tasks;
 
 namespace Imagegram.Api.Handlers
 {
-    public class CreatePostHandler : IRequestHandler<CreatePostRequest, CreatePostResponse>
+    public class CreatePostHandler : IRequestHandler<CreatePostRequest, PostDto>
     {
         private readonly ImageService _imageService;
         private readonly ApplicationContext _db;
-        private readonly IMapper _mapper;
 
-        public CreatePostHandler(ImageService imageService, ApplicationContext db, IMapper mapper)
+        public CreatePostHandler(ImageService imageService, ApplicationContext db)
         {
             _imageService = imageService;
             _db = db;
-            _mapper = mapper;
         }
 
-        public async Task<CreatePostResponse> Handle(CreatePostRequest request, CancellationToken cancellationToken)
+        public async Task<PostDto> Handle(CreatePostRequest request, CancellationToken cancellationToken)
         {
             var imageName = _imageService.Save(request.ImageStream);
 
@@ -46,7 +43,7 @@ namespace Imagegram.Api.Handlers
                 throw;
             }
 
-            return _mapper.Map<CreatePostResponse>(post);
+            return DtosBuilder.Build(post);
         }
     }
 }

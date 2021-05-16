@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Imagegram.Api.Database;
+﻿using Imagegram.Api.Database;
 using Imagegram.Api.Database.Models;
 using Imagegram.Api.Dtos;
 using Imagegram.Api.Exceptions;
@@ -16,12 +15,10 @@ namespace Imagegram.Api.Handlers
     {
         private const int MaxLimit = 1000;
         private readonly ApplicationContext _db;
-        private readonly IMapper _mapper;
 
-        public GetPostsHandler(ApplicationContext db, IMapper mapper)
+        public GetPostsHandler(ApplicationContext db)
         {
             _db = db;
-            _mapper = mapper;
         }
 
         public async Task<GetPostsResponse> Handle(GetPostsRequest request, CancellationToken cancellationToken)
@@ -44,7 +41,7 @@ namespace Imagegram.Api.Handlers
 
             return new GetPostsResponse
             {
-                Posts = _mapper.Map<List<PostDto>>(posts),
+                Posts = DtosBuilder.Build(posts),
                 Cursor = nextCursor.ToBase64()
             };
         }

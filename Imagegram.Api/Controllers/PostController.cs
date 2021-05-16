@@ -34,7 +34,7 @@ namespace Imagegram.Api.Controllers
         /// <response code="400">Request has incorrect format.</response>         
         /// <response code="401">Account unauthorized or doesn't exist.</response> 
         [HttpPost("posts")]
-        public async Task<ActionResult<CreatePostResponse>> Create()
+        public async Task<ActionResult<PostDto>> Create()
         {
             using var stream = await GetBodyStream();
             var accountId = GetAccountId();
@@ -80,7 +80,7 @@ namespace Imagegram.Api.Controllers
         /// <response code="401">Account unauthorized or doesn't exist.</response> 
         /// <response code="404">Post doesn't exist.</response> 
         [HttpPost("posts/{postId}/comments")]
-        public async Task<ActionResult<AddCommentResponse>> AddComment([FromRoute] int postId, [FromBody] AddCommentRequest request)
+        public async Task<ActionResult> AddComment([FromRoute] int postId, [FromBody] AddCommentRequest request)
         {
             request.PostId = postId;
             request.AccountId = GetAccountId();

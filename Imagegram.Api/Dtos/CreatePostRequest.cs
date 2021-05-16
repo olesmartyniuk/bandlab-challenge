@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Imagegram.Api.Dtos
 {
-    public class CreatePostRequest : IRequest<CreatePostResponse>
+    public class CreatePostRequest : IRequest<PostDto>
     {
         public Guid AccountId { get; set; }
         public MemoryStream ImageStream { get; set; }

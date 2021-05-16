@@ -26,7 +26,7 @@ namespace Imagegram.Api.Controllers
         /// <response code="400">Request has incorrect format.</response>         
         [AllowAnonymous]
         [HttpPost("accounts")]
-        public async Task<ActionResult<CreateAccountResponse>> Create([FromBody] CreateAccountRequest request)
+        public async Task<ActionResult<AccountDto>> Create([FromBody] CreateAccountRequest request)
         {
             var response = await _mediator.Send(request);
             return Created($"accounts/{response.Id}", response);

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Imagegram.Api.Dtos
 {
-    public class AddCommentRequest : IRequest<AddCommentResponse>
+    public class AddCommentRequest : IRequest
     {
         [Required]
         public string Content { get; set; }
