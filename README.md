@@ -80,6 +80,8 @@ To run integration tests execute the following command:
 ## Improvements
 The next steps to improve the solutions would be: 
 
+* Implement removing of account
+* Optimize creating of comment with async update of posts info
 * Implement idempotency for creating posts and comments
 * Add in-memory cache for hot entities
 * Add logs and metrics
