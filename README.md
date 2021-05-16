@@ -61,15 +61,17 @@
 * It’s ok to not cover all the stories - please focus on good design and clean implementation
 * If you have any questions feel free to ask
 
-# Result
+# Results
 ## How to run application
-To build and run the project you need to have .NET 5 SDK. Check out the repository and execute the following command in the root folder.
+To build and run the project you need to have .NET 5 SDK. 
+
+Checkout the repository and execute the following command in the root folder.
 
 ``` dotnet run -p Imagegram.API/Imagegram.Api.csproj```
 
 To see the Swagger documentation open the URL https://localhost:5001/swagger/index.html in your browser.
 
-![](https://github.com/alexmartyniuk/bandlab-challenge/blob/master/docs/swaggerui.png?raw=true)
+![](https://github.com/alexmartyniuk/bandlab-challenge/blob/main/Docs/SwaggerUI.png?raw=true)
 
 To run integration tests execute the following command:
 
