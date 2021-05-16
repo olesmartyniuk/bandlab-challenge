@@ -1,2 +1,2 @@
-GET  https://localhost:5001/images/0ee661e6-e947-4569-86aa-2c1901195710.jpg HTTP/1.1
+GET  https://localhost:5001/images/49516617-6ab3-40fd-9cd6-b2f585a44662.jpg HTTP/1.1
 Accept: image/jpeg

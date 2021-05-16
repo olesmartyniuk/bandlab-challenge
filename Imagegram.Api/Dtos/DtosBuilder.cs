@@ -6,20 +6,28 @@ namespace Imagegram.Api.Dtos
 {
     public static class DtosBuilder
     {
-        public static PostDto Build(PostModel post)
+        public static PostDto Build(PostModel post, AccountModel account = null)
         {
-            return new PostDto
+            var result = new PostDto
             {
                 Id = post.Id,
-                Creator = Build(post.Creator),
+                Creator = Build(account ?? post.Creator),
                 CreatedAt = post.CreatedAt,
                 ImageUrl = post.ImageUrl,
-                Comments = new List<CommentDto>
-                {
-                    Build(post.CommentLast),
-                    Build(post.CommentBeforeLast),
-                }
-            };
+                Comments = new List<CommentDto>()
+            };            
+
+            if (post.CommentLast != null)
+            {
+                result.Comments.Add(Build(post.CommentLast));
+            }
+
+            if (post.CommentBeforeLast != null)
+            {
+                result.Comments.Add(Build(post.CommentBeforeLast));
+            }
+
+            return result;
         }
 
         public static CommentDto Build(CommentModel comment)
@@ -42,9 +50,11 @@ namespace Imagegram.Api.Dtos
             };
         }
 
-        public static List<PostDto> Build(List<PostModel> posts)
+        public static List<PostDto> Build(List<PostModel> posts, AccountModel account = null)
         {
-            return posts.Select(post => Build(post)).ToList();
-        }
+            return posts
+                .Select(post => Build(post, account))
+                .ToList();
+        }        
     }
 }

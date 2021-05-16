@@ -21,18 +21,18 @@ namespace Imagegram.Api.Controllers
         /// <response code="400">Query parameter has incorrect format.</response>         
         /// <response code="401">Account unauthorized or doesn't exist.</response> 
         /// <response code="404">Image doesn't exist.</response> 
-        [HttpGet("images/{imageName}")]
-        public ActionResult Get([FromRoute] string imageName)
+        [HttpGet("images/{fileName}")]
+        public ActionResult Get([FromRoute] string fileName)
         {
-            if (!_imageService.Exists(imageName))
+            if (!_imageService.Exists(fileName))
             {
                 return NotFound("Image doesn't exist.");
             }
 
-            var imageStream = _imageService.Get(imageName);            
+            var imageStream = _imageService.Get(fileName);            
             Response.Headers[HeaderNames.ContentDisposition] = new ContentDisposition
             {
-                FileName = imageName,
+                FileName = fileName,
                 DispositionType = DispositionTypeNames.Attachment
             }.ToString();
 

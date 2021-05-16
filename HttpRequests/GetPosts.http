@@ -1,4 +1,4 @@
-GET https://localhost:5001/posts?cursor=MDoxMA==&limit=10 HTTP/1.1
-X-Account-Id: 5b44b366-aa5d-4ee0-ac09-75ce87c649fd
+GET https://localhost:5001/posts?cursor=MTAxMDo0&limit=2 HTTP/1.1
+X-Account-Id: 25fcefd6-f45a-4c30-867c-cb7bca66c745
 Content-Type: application/json
 Accept: */*

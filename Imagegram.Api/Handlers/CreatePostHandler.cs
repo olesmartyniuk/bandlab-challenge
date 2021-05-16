@@ -13,37 +13,41 @@ namespace Imagegram.Api.Handlers
     {
         private readonly ImageService _imageService;
         private readonly ApplicationContext _db;
+        private readonly Cash<AccountModel> _accountsCash;
 
-        public CreatePostHandler(ImageService imageService, ApplicationContext db)
+        public CreatePostHandler(ImageService imageService, ApplicationContext db, Cash<AccountModel> accountsCash)
         {
             _imageService = imageService;
             _db = db;
+            _accountsCash = accountsCash;
         }
 
         public async Task<PostDto> Handle(CreatePostRequest request, CancellationToken cancellationToken)
         {
-            var imageName = _imageService.Save(request.ImageStream);
+            var account = await _accountsCash.GetOrCreate(request.AccountId, 
+                async () => await _db.Accounts.FindAsync(request.AccountId, cancellationToken));
+            
+            var imageFile = _imageService.Save(request.ImageStream);
 
             var post = new PostModel
             {
-                ImageUrl = $"/images/{imageName}",
-                CreatorId = request.AccountId,
+                ImageUrl = $"/images/{imageFile}",
+                CreatorId = account.Id,
                 CreatedAt = DateTime.UtcNow
             };
 
             try
-            {
+            {               
                 _db.Posts.Add(post);
-
                 await _db.SaveChangesAsync(cancellationToken);
             }
             catch
             {
-                _imageService.Delete(imageName);
+                _imageService.Delete(imageFile);
                 throw;
             }
 
-            return DtosBuilder.Build(post);
+            return DtosBuilder.Build(post, account);
         }
     }
 }

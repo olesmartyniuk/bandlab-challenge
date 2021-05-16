@@ -2,6 +2,7 @@
 using Imagegram.Api.Database.Models;
 using Imagegram.Api.Dtos;
 using Imagegram.Api.Exceptions;
+using Imagegram.Api.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -15,14 +16,19 @@ namespace Imagegram.Api.Handlers
     {
         private const int MaxLimit = 1000;
         private readonly ApplicationContext _db;
+        private Cash<AccountModel> _accountsCash;
 
-        public GetPostsHandler(ApplicationContext db)
+        public GetPostsHandler(ApplicationContext db, Cash<AccountModel> accountsCash)
         {
             _db = db;
+            _accountsCash = accountsCash;
         }
 
         public async Task<GetPostsResponse> Handle(GetPostsRequest request, CancellationToken cancellationToken)
         {
+            var account = await _accountsCash.GetOrCreate(request.AccountId,
+               async () => await _db.Accounts.FindAsync(request.AccountId, cancellationToken));
+
             var cursor = PostsCursor.ParseCursor(request.Cursor);
             if (cursor.IsInvalid)
             {
@@ -41,7 +47,7 @@ namespace Imagegram.Api.Handlers
 
             return new GetPostsResponse
             {
-                Posts = DtosBuilder.Build(posts),
+                Posts = DtosBuilder.Build(posts, account),
                 Cursor = nextCursor.ToBase64()
             };
         }
@@ -59,25 +65,32 @@ namespace Imagegram.Api.Handlers
 
         private IQueryable<PostModel> GetPostsQuery(PostsCursor currentCursor, int limit)
         {
+            IQueryable<PostModel> query = _db.Posts;
+
             if (currentCursor.IsEmpty)
             {
-                return _db.Posts
+                query = query
                     .OrderByDescending(p => p.CommentsCount)
-                    .ThenBy(p => p.Id)
-                    .Take(limit)
-                    .Include(p => p.CommentLast)
-                    .Include(p => p.CommentBeforeLast);
+                    .ThenBy(p => p.Id);
+            }
+            else
+            {
+                query = query
+                    .Where(p =>
+                        (p.CommentsCount < currentCursor.CommentsCount) ||
+                        (p.CommentsCount == currentCursor.CommentsCount && p.Id > currentCursor.LastPostId))
+                    .OrderByDescending(p => p.CommentsCount)
+                    .ThenBy(p => p.Id);
             }
 
-            return _db.Posts
-                .Where(p =>
-                    (p.CommentsCount < currentCursor.CommentsCount) ||
-                    (p.CommentsCount == currentCursor.CommentsCount && p.Id > currentCursor.LastPostId))
-                .OrderByDescending(p => p.CommentsCount)
-                .ThenBy(p => p.Id)
+            query = query 
                 .Take(limit)
                 .Include(p => p.CommentLast)
-                .Include(p => p.CommentBeforeLast);
+                .ThenInclude(c => c.Creator)
+                .Include(p => p.CommentBeforeLast)
+                .ThenInclude(c => c.Creator);
+
+            return query;
         }
     }
 }
