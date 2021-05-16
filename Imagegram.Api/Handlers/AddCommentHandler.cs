@@ -5,29 +5,35 @@ using Imagegram.Api.Exceptions;
 using Imagegram.Api.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Imagegram.Api.Handlers
 {
-    public class AddCommentHandler : AsyncRequestHandler<AddCommentRequest>
+    public class AddCommentHandler : IRequestHandler<AddCommentRequest, CommentDto>
     {
         private readonly ApplicationContext _db;
         private readonly Cash<PostModel> _postsCash;
+        private readonly DateTimeService _dateTime;
+        private readonly Cash<AccountModel> _accountsCash;
 
-        public AddCommentHandler(ApplicationContext db, Cash<PostModel> postsCash)
+        public AddCommentHandler(ApplicationContext db, Cash<PostModel> postsCash, DateTimeService dateTime, Cash<AccountModel> accountsCash)
         {
             _db = db;
             _postsCash = postsCash;
+            _dateTime = dateTime;
+            _accountsCash = accountsCash;
         }
 
-        protected override async Task Handle(AddCommentRequest request, CancellationToken cancellationToken)
+        public async Task<CommentDto> Handle(AddCommentRequest request, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(request.Content))
             {
                 throw new InvalidParameterException("Comment content can't be empty.");
             }
+
+            var account = await _accountsCash.GetOrCreate(request.AccountId,
+                async () => await _db.Accounts.FindAsync(request.AccountId, cancellationToken));
 
             var post = await _postsCash.GetOrCreate(request.PostId,
                 async () => await _db.Posts.FindAsync(request.PostId));
@@ -39,12 +45,14 @@ namespace Imagegram.Api.Handlers
             var comment = new CommentModel
             {
                 Content = request.Content,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = _dateTime.Now(),
                 PostId = post.Id,
-                CreatorId = request.AccountId
+                CreatorId = account.Id
             };
             await SaveComment(comment);
             await UpdatePost(post);
+
+            return DtosBuilder.Build(comment, account);
         }
 
         private async Task SaveComment(CommentModel comment)

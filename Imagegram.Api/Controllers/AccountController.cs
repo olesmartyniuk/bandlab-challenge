@@ -3,13 +3,14 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 namespace Imagegram.Api.Controllers
 {
     [Authorize]
     [Produces("application/json")]
-    public class AccountController : ControllerBase
+    public class AccountController : Controller
     {
         private readonly IMediator _mediator;
 

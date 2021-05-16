@@ -30,13 +30,13 @@ namespace Imagegram.Api.Dtos
             return result;
         }
 
-        public static CommentDto Build(CommentModel comment)
+        public static CommentDto Build(CommentModel comment, AccountModel account = null)
         {
             return new CommentDto
             {
                 Id = comment.Id,
                 Content = comment.Content,
-                Creator = Build(comment.Creator),
+                Creator = Build(account ?? comment.Creator),
                 CreatedAt = comment.CreatedAt
             };
         }

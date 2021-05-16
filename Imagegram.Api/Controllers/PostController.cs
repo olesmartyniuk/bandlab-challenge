@@ -41,7 +41,7 @@ namespace Imagegram.Api.Controllers
 
             var request = new CreatePostRequest
             {
-                ImageStream = stream,
+                ImageData = stream,
                 AccountId = accountId
             };
 
@@ -75,7 +75,7 @@ namespace Imagegram.Api.Controllers
         /// The method add a comment for a post.
         /// </summary>
         /// <returns>Post with added comment.</returns>
-        /// <response code="200">Comment was added.</response>
+        /// <response code="201">Comment was added.</response>
         /// <response code="400">Query parameters have incorrect format.</response>         
         /// <response code="401">Account unauthorized or doesn't exist.</response> 
         /// <response code="404">Post doesn't exist.</response> 
@@ -85,8 +85,8 @@ namespace Imagegram.Api.Controllers
             request.PostId = postId;
             request.AccountId = GetAccountId();
 
-            await _mediator.Send(request);
-            return Ok();
+            var response = await _mediator.Send(request);
+            return Created($"posts/{postId}/comments/{response.Id}", response);
         }
 
         private Guid GetAccountId()

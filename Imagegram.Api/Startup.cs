@@ -1,5 +1,6 @@
 using Hellang.Middleware.ProblemDetails;
 using Imagegram.Api.Authentication;
+using Imagegram.Api.Controllers;
 using Imagegram.Api.Database;
 using Imagegram.Api.Database.Models;
 using Imagegram.Api.Exceptions;
@@ -37,7 +38,9 @@ namespace Imagegram.Api
                 .AddScheme<AuthenticationSchemeOptions, AuthenticationHandler>("HeaderAuthentication", null);
             services.AddAuthorization();
 
-            services.AddControllers();
+            services.AddControllers(options => {
+                options.Filters.Add(typeof(ModelStateValidator));
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Imagegram API", Version = "v1" });
@@ -54,10 +57,11 @@ namespace Imagegram.Api
                 var databaseFileName = Configuration.GetValue<string>("DataBaseFileName");
                 options.UseSqlite($"Data Source={databaseFileName}");
             });
-
-            services.AddSingleton<ImageService>();
+            
+            services.AddSingleton<FileService>();
             services.AddSingleton<Cash<AccountModel>>();
             services.AddSingleton<Cash<PostModel>>();
+            services.AddSingleton<DateTimeService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -2,16 +2,17 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using System.Net.Mime;
+using System.Threading.Tasks;
 
 namespace Imagegram.Api.Controllers
 {
     public class ImageController : ControllerBase
     {
-        private readonly ImageService _imageService;
+        private readonly FileService _fileService;
 
-        public ImageController(ImageService imageService)
+        public ImageController(FileService fileService)
         {
-            _imageService = imageService;
+            _fileService = fileService;
         }
 
         /// <summary>
@@ -22,14 +23,14 @@ namespace Imagegram.Api.Controllers
         /// <response code="401">Account unauthorized or doesn't exist.</response> 
         /// <response code="404">Image doesn't exist.</response> 
         [HttpGet("images/{fileName}")]
-        public ActionResult Get([FromRoute] string fileName)
+        public async Task<ActionResult> Get([FromRoute] string fileName)
         {
-            if (!_imageService.Exists(fileName))
+            if (!_fileService.Exists(fileName))
             {
                 return NotFound("Image doesn't exist.");
             }
 
-            var imageStream = _imageService.Get(fileName);            
+            var imageStream = await _fileService.Get(fileName);            
             Response.Headers[HeaderNames.ContentDisposition] = new ContentDisposition
             {
                 FileName = fileName,
