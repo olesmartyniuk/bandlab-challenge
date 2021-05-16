@@ -5,6 +5,7 @@ using Imagegram.Api.Exceptions;
 using Imagegram.Api.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -26,9 +27,25 @@ namespace Imagegram.Api.Handlers
 
         public async Task<GetPostsResponse> Handle(GetPostsRequest request, CancellationToken cancellationToken)
         {
-            var account = await _accountsCash.GetOrCreate(request.AccountId,
-               async () => await _db.Accounts.FindAsync(request.AccountId, cancellationToken));
+            ValidateRequest(request);
 
+            var account = await GetAccount(request.AccountId, cancellationToken);
+            var cursor = PostsCursor.ParseCursor(request.Cursor);            
+            var limit = request.Limit;
+
+            var postsQuery = GetPostsQuery(cursor, limit);
+            var posts = await postsQuery.ToListAsync(cancellationToken);
+            var nextCursor = GetNextCursor(limit, posts);
+
+            return new GetPostsResponse
+            {
+                Posts = DtosBuilder.Build(posts, account),
+                Cursor = nextCursor.ToBase64()
+            };
+        }
+
+        private void ValidateRequest(GetPostsRequest request)
+        {
             var cursor = PostsCursor.ParseCursor(request.Cursor);
             if (cursor.IsInvalid)
             {
@@ -40,16 +57,12 @@ namespace Imagegram.Api.Handlers
             {
                 throw new InvalidParameterException("The limit parameter can't be greater than 1000.");
             }
+        }
 
-            var postsQuery = GetPostsQuery(cursor, limit);
-            var posts = await postsQuery.ToListAsync(cancellationToken);
-            var nextCursor = GetNextCursor(limit, posts);
-
-            return new GetPostsResponse
-            {
-                Posts = DtosBuilder.Build(posts, account),
-                Cursor = nextCursor.ToBase64()
-            };
+        private async Task<AccountModel> GetAccount(Guid accountId, CancellationToken cancellationToken)
+        {
+            return await _accountsCash.GetOrCreate(accountId,
+                async () => await _db.Accounts.FindAsync(accountId, cancellationToken));
         }
 
         private static PostsCursor GetNextCursor(int limit, List<PostModel> posts)

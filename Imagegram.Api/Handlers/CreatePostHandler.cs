@@ -30,13 +30,40 @@ namespace Imagegram.Api.Handlers
 
         public async Task<PostDto> Handle(CreatePostRequest request, CancellationToken cancellationToken)
         {
-            var account = await _accountsCash.GetOrCreate(request.AccountId, 
-                async () => await _db.Accounts.FindAsync(request.AccountId, cancellationToken));
-            
+            var account = await GetAccount(request.AccountId, cancellationToken);
+            var imageFile = await GetImageFile(request.ImageData);
+
+            var post = new PostModel
+            {
+                ImageUrl = $"/images/{imageFile}",
+                CreatorId = account.Id,
+                CreatedAt = _dateTime.Now()
+            };
+            await SavePost(post, imageFile, cancellationToken);
+
+            return DtosBuilder.Build(post, account);
+        }
+
+        private async Task SavePost(PostModel post, string imageFile, CancellationToken cancellationToken)
+        {
+            try
+            {
+                _db.Posts.Add(post);
+                await _db.SaveChangesAsync(cancellationToken);
+            }
+            catch
+            {
+                _fileService.Delete(imageFile);
+                throw;
+            }
+        }
+
+        private async Task<string> GetImageFile(MemoryStream imageData)
+        {
             var imageFile = string.Empty;
             try
             {
-                using var jpgStream = ConvertImageToJpg(request.ImageData);
+                using var jpgStream = ConvertImageToJpg(imageData);
                 imageFile = await _fileService.Save(jpgStream);
             }
             catch (Exception e)
@@ -49,28 +76,16 @@ namespace Imagegram.Api.Handlers
                 throw;
             }
 
-            var post = new PostModel
-            {
-                ImageUrl = $"/images/{imageFile}",
-                CreatorId = account.Id,
-                CreatedAt = _dateTime.Now()
-            };
-
-            try
-            {               
-                _db.Posts.Add(post);
-                await _db.SaveChangesAsync(cancellationToken);
-            }
-            catch
-            {
-                _fileService.Delete(imageFile);
-                throw;
-            }
-
-            return DtosBuilder.Build(post, account);
+            return imageFile;
         }
 
-        private MemoryStream ConvertImageToJpg(Stream imageStream)
+        private async Task<AccountModel> GetAccount(Guid accountId, CancellationToken cancellationToken)
+        {
+            return await _accountsCash.GetOrCreate(accountId,
+                async () => await _db.Accounts.FindAsync(accountId, cancellationToken));
+        }
+
+        private static MemoryStream ConvertImageToJpg(Stream imageStream)
         {
             using var image = Image.FromStream(imageStream, false);
             var result = new MemoryStream();

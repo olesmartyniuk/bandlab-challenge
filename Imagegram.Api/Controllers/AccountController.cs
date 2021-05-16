@@ -3,7 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 namespace Imagegram.Api.Controllers
@@ -20,7 +19,7 @@ namespace Imagegram.Api.Controllers
         }
 
         /// <summary>
-        /// The method creates account in the system.
+        /// The method creates new account in the system.
         /// </summary>
         /// <returns>Created account.</returns>
         /// <response code="201">Account was created.</response>

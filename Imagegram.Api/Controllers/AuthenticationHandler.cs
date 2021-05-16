@@ -43,7 +43,7 @@ namespace Imagegram.Api.Authentication
             Guid accountId;
             if (!TryGetAccountId(out accountId))
             {
-                return AuthenticateResult.Fail($"Missed {AccountIdHeader} header.");
+                return AuthenticateResult.Fail($"Authentication header {AccountIdHeader} is not found.");
             }
 
             var account = await FindAccount(accountId);

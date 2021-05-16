@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Imagegram.Api.Controllers
 {
-    public class ImageController : ControllerBase
+    public class ImageController : Controller
     {
         private readonly FileService _fileService;
 

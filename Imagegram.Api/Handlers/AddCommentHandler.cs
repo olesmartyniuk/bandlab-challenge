@@ -5,6 +5,7 @@ using Imagegram.Api.Exceptions;
 using Imagegram.Api.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,20 +28,10 @@ namespace Imagegram.Api.Handlers
 
         public async Task<CommentDto> Handle(AddCommentRequest request, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(request.Content))
-            {
-                throw new InvalidParameterException("Comment content can't be empty.");
-            }
+            ValidateRequest(request);
 
-            var account = await _accountsCash.GetOrCreate(request.AccountId,
-                async () => await _db.Accounts.FindAsync(request.AccountId, cancellationToken));
-
-            var post = await _postsCash.GetOrCreate(request.PostId,
-                async () => await _db.Posts.FindAsync(request.PostId));
-            if (post == null)
-            {
-                throw new PostNotFoundException($"Post with id '{request.PostId}' is not found.");
-            }
+            var account = await GetAccount(request.AccountId, cancellationToken);
+            var post = await GetPost(request.PostId);
 
             var comment = new CommentModel
             {
@@ -49,10 +40,37 @@ namespace Imagegram.Api.Handlers
                 PostId = post.Id,
                 CreatorId = account.Id
             };
+
             await SaveComment(comment);
             await UpdatePost(post);
 
             return DtosBuilder.Build(comment, account);
+        }
+
+        private async Task<PostModel> GetPost(int postId)
+        {
+            var post = await _postsCash.GetOrCreate(postId,
+                async () => await _db.Posts.FindAsync(postId));
+            if (post == null)
+            {
+                throw new PostNotFoundException($"Post with id '{postId}' is not found.");
+            }
+
+            return post;
+        }
+
+        private async Task<AccountModel> GetAccount(Guid accountId, CancellationToken cancellationToken)
+        {
+            return await _accountsCash.GetOrCreate(accountId,
+                async () => await _db.Accounts.FindAsync(accountId, cancellationToken));
+        }
+
+        private static void ValidateRequest(AddCommentRequest request)
+        {
+            if (string.IsNullOrEmpty(request.Content))
+            {
+                throw new InvalidParameterException("Comment content can't be empty.");
+            }
         }
 
         private async Task SaveComment(CommentModel comment)
