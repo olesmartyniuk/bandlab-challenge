@@ -1,5 +1,4 @@
 # BandLab challenge
-### Backend Developer
 
 ## What to build:
 * “Imagegram” - a system that allows you to upload images and comment on them (no UI required)
@@ -61,3 +60,26 @@
 * You are recommended to spend no more than 5 hours on this challenge
 * It’s ok to not cover all the stories - please focus on good design and clean implementation
 * If you have any questions feel free to ask
+
+# Result
+## How to run application
+To build and run the project you need to have .NET 5 SDK. Check out the repository and execute the following command in the root folder.
+
+``` dotnet run -p Imagegram.API/Imagegram.Api.csproj```
+
+To see the Swagger documentation open the URL https://localhost:5001/swagger/index.html in your browser.
+
+![](https://github.com/alexmartyniuk/bandlab-challenge/blob/master/docs/swaggerui.png?raw=true)
+
+To run integration tests execute the following command:
+
+``` dotnet test ```
+
+## Improvements
+The next steps to improve the solutions would be: 
+
+* Implement idempotency for creating posts and comments
+* Add in-memory cache for hot entities
+* Add logs and metrics
+* Optimize image processing, reduce extra copying in memory
+* Add more tests
