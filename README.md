@@ -80,6 +80,7 @@ To run integration tests execute the following command:
 ## Improvements
 The next steps to improve the solutions would be: 
 
+* Replace SQLite with a production ready database (Postgres, MySQL, MS SQL)
 * Implement removing of account
 * Optimize creating of comment with async update of posts info
 * Implement idempotency for creating posts and comments
