@@ -17,21 +17,21 @@ namespace Imagegram.Api.Handlers
     {
         private readonly FileService _fileService;
         private readonly ApplicationContext _db;
-        private readonly Cash<AccountModel> _accountsCash;
+        private readonly Cache<AccountModel> _accountsCache;
         private readonly DateTimeService _dateTime;
 
-        public CreatePostHandler(FileService fileService, ApplicationContext db, Cash<AccountModel> accountsCash, DateTimeService dateTime)
+        public CreatePostHandler(FileService fileService, ApplicationContext db, Cache<AccountModel> accountsCache, DateTimeService dateTime)
         {
             _fileService = fileService;
             _db = db;
-            _accountsCash = accountsCash;
+            _accountsCache = accountsCache;
             _dateTime = dateTime;
         }
 
         public async Task<PostDto> Handle(CreatePostRequest request, CancellationToken cancellationToken)
         {
             var account = await GetAccount(request.AccountId, cancellationToken);
-            var imageFile = await GetImageFile(request.ImageData);
+            var imageFile = await SaveImage(request.ImageData);
 
             var post = new PostModel
             {
@@ -58,7 +58,7 @@ namespace Imagegram.Api.Handlers
             }
         }
 
-        private async Task<string> GetImageFile(MemoryStream imageData)
+        private async Task<string> SaveImage(MemoryStream imageData)
         {
             var imageFile = string.Empty;
             try
@@ -81,7 +81,7 @@ namespace Imagegram.Api.Handlers
 
         private async Task<AccountModel> GetAccount(Guid accountId, CancellationToken cancellationToken)
         {
-            return await _accountsCash.GetOrCreate(accountId,
+            return await _accountsCache.GetOrCreate(accountId,
                 async () => await _db.Accounts.FindAsync(accountId, cancellationToken));
         }
 

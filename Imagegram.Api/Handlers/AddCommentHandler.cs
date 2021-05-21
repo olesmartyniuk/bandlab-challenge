@@ -14,16 +14,16 @@ namespace Imagegram.Api.Handlers
     public class AddCommentHandler : IRequestHandler<AddCommentRequest, CommentDto>
     {
         private readonly ApplicationContext _db;
-        private readonly Cash<PostModel> _postsCash;
+        private readonly Cache<PostModel> _postsCache;
         private readonly DateTimeService _dateTime;
-        private readonly Cash<AccountModel> _accountsCash;
+        private readonly Cache<AccountModel> _accountsCache;
 
-        public AddCommentHandler(ApplicationContext db, Cash<PostModel> postsCash, DateTimeService dateTime, Cash<AccountModel> accountsCash)
+        public AddCommentHandler(ApplicationContext db, Cache<PostModel> postsCache, DateTimeService dateTime, Cache<AccountModel> accountsCache)
         {
             _db = db;
-            _postsCash = postsCash;
+            _postsCache = postsCache;
             _dateTime = dateTime;
-            _accountsCash = accountsCash;
+            _accountsCache = accountsCache;
         }
 
         public async Task<CommentDto> Handle(AddCommentRequest request, CancellationToken cancellationToken)
@@ -41,6 +41,7 @@ namespace Imagegram.Api.Handlers
                 CreatorId = account.Id
             };
 
+            // TODO: in one transaction
             await SaveComment(comment);
             await UpdatePost(post);
 
@@ -49,7 +50,7 @@ namespace Imagegram.Api.Handlers
 
         private async Task<PostModel> GetPost(int postId)
         {
-            var post = await _postsCash.GetOrCreate(postId,
+            var post = await _postsCache.GetOrCreate(postId,
                 async () => await _db.Posts.FindAsync(postId));
             if (post == null)
             {
@@ -61,7 +62,7 @@ namespace Imagegram.Api.Handlers
 
         private async Task<AccountModel> GetAccount(Guid accountId, CancellationToken cancellationToken)
         {
-            return await _accountsCash.GetOrCreate(accountId,
+            return await _accountsCache.GetOrCreate(accountId,
                 async () => await _db.Accounts.FindAsync(accountId, cancellationToken));
         }
 

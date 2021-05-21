@@ -5,15 +5,15 @@ using System.Threading.Tasks;
 
 namespace Imagegram.Api.Services
 {
-    public class Cash<TItem>
+    public class Cache<TItem>
     {
         private readonly MemoryCache _cache;
 
-        public Cash(IConfiguration configuration)
+        public Cache(IConfiguration configuration)
         {
             _cache = new MemoryCache(new MemoryCacheOptions()
             {
-                SizeLimit = configuration.GetValue<int>("InMemoryCashMaxItems")
+                SizeLimit = configuration.GetValue<int>("InMemoryCacheMaxItems")
             });
         }                
 

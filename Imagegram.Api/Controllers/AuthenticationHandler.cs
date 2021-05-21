@@ -17,7 +17,7 @@ namespace Imagegram.Api.Authentication
     {
         private const string AccountIdHeader = "X-Account-Id";
         private readonly ApplicationContext _db;
-        private readonly Cash<AccountModel> _accountCash;
+        private readonly Cache<AccountModel> _accountCash;
 
         public AuthenticationHandler(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
@@ -25,7 +25,7 @@ namespace Imagegram.Api.Authentication
             UrlEncoder encoder,
             ISystemClock clock,
             ApplicationContext db,
-            Cash<AccountModel> accountCash)
+            Cache<AccountModel> accountCash)
             : base(options, logger, encoder, clock)
         {
             _db = db;

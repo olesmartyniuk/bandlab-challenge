@@ -17,12 +17,12 @@ namespace Imagegram.Api.Handlers
     {
         private const int MaxLimit = 1000;
         private readonly ApplicationContext _db;
-        private Cash<AccountModel> _accountsCash;
+        private Cache<AccountModel> _accountsCache;
 
-        public GetPostsHandler(ApplicationContext db, Cash<AccountModel> accountsCash)
+        public GetPostsHandler(ApplicationContext db, Cache<AccountModel> accountsCache)
         {
             _db = db;
-            _accountsCash = accountsCash;
+            _accountsCache = accountsCache;
         }
 
         public async Task<GetPostsResponse> Handle(GetPostsRequest request, CancellationToken cancellationToken)
@@ -61,7 +61,7 @@ namespace Imagegram.Api.Handlers
 
         private async Task<AccountModel> GetAccount(Guid accountId, CancellationToken cancellationToken)
         {
-            return await _accountsCash.GetOrCreate(accountId,
+            return await _accountsCache.GetOrCreate(accountId,
                 async () => await _db.Accounts.FindAsync(accountId, cancellationToken));
         }
 

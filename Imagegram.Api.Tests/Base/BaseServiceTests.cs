@@ -26,7 +26,7 @@ namespace Imagegram.Api.Tests
 
             _configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string> {
-                    {"InMemoryCashMaxItems", "1024"}
+                    {"InMemoryCacheMaxItems", "1024"}
                 }).Build();
             _fileService = new Mock<FileService>(MockBehavior.Strict, _configuration);
             _dateTimeService = new Mock<DateTimeService>(MockBehavior.Strict);
@@ -45,8 +45,8 @@ namespace Imagegram.Api.Tests
 
             services.AddSingleton(sp => _dateTimeService.Object);
             services.AddSingleton(sp => _fileService.Object);
-            services.AddSingleton<Cash<AccountModel>>();
-            services.AddSingleton<Cash<PostModel>>();
+            services.AddSingleton<Cache<AccountModel>>();
+            services.AddSingleton<Cache<PostModel>>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddMediatR(Assembly.GetAssembly(typeof(Startup)));

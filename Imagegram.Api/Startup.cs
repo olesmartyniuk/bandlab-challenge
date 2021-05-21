@@ -59,8 +59,8 @@ namespace Imagegram.Api
             });
             
             services.AddSingleton<FileService>();
-            services.AddSingleton<Cash<AccountModel>>();
-            services.AddSingleton<Cash<PostModel>>();
+            services.AddSingleton<Cache<AccountModel>>();
+            services.AddSingleton<Cache<PostModel>>();
             services.AddSingleton<DateTimeService>();
         }
 
